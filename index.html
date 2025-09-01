@@ -1,0 +1,55 @@
+<!DOCTYPE html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ALL IN Timer</title><link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<style>
+  #installBanner {
+    position: fixed; left: 50%; transform: translateX(-50%);
+    bottom: 16px; z-index: 9999;
+    display: none; gap: 8px; align-items: center;
+    background: rgba(0,0,0,.75); color: #fff; border-radius: 999px;
+    padding: 10px 14px; box-shadow: 0 8px 22px rgba(0,0,0,.35);
+    backdrop-filter: blur(6px);
+  }
+  #installBanner button {
+    background: #ffd3c2; color: #4a2b1f; border: none; border-radius: 999px;
+    padding: 8px 12px; font-weight: 700; cursor: pointer;
+  }
+  body.dark #installBanner { background: rgba(255,255,255,.08); color: #fff; }
+  body.dark #installBanner button { background: #ffb497; color: #3a2018; }
+</style>
+
+</head><body><p>Errore: sorgente non trovato.</p><script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('./service-worker.js').catch(console.error);
+  });
+}
+</script>
+
+<div id="installBanner">
+  <span>Installa l’app ALL IN Timer</span>
+  <button id="installBtn">Installa</button>
+</div>
+
+
+<script>
+let deferredPrompt = null;
+const banner = document.getElementById('installBanner');
+const installBtn = document.getElementById('installBtn');
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; if (banner) banner.style.display = 'flex'; });
+if (installBtn) {
+  installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    try { await deferredPrompt.userChoice; } catch(e) {}
+    deferredPrompt = null;
+    if (banner) banner.style.display = 'none';
+  });
+}
+window.addEventListener('appinstalled', () => { if (banner) banner.style.display = 'none'; });
+</script>
+
+</body></html>
